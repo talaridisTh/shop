@@ -8,7 +8,8 @@
 
 	  <div class="flex justify-between items-center">
 		 <Title>User</Title>
-		 <ResponsiveNavLink class="flex space-x-3" :href="route('user.create')">
+		 <ResponsiveNavLink class="flex space-x-3"
+							:href="route('user.create')">
 			<DocumentAddIcon class="w-4" />
 			<span>Add User</span>
 		 </ResponsiveNavLink>
@@ -39,12 +40,14 @@
 				  <FilterIcon class="w-4 text-indigo-600" />
 				  <span>Items Per Page</span>
 			   </Label>
-			   <Select v-model="form.limit" :options="limitFilter" />
+			   <Select v-model="form.limit"
+					   :options="limitFilter" />
 			</div>
 			<!--Status-->
 			<div class="flex flex-col flex-1">
 			   <Label>Status</Label>
-			   <Select v-model="form.status" :options="limitStatus" />
+			   <Select v-model="form.status"
+					   :options="limitStatus" />
 			</div>
 		 </div>
 	  </div>
@@ -52,11 +55,18 @@
 	  <!--Preview Filter-->
 	  <div class="py-4 flex space-x-2">
 
-		 <Filter :form="form.order" :filter-name-second="form.sort" filter-name="sort" @removeFilter="removeFilter" />
+		 <Filter :form="form.order"
+				 :filter-name-second="form.sort"
+				 filter-name="sort"
+				 @removeFilter="removeFilter" />
 
-		 <Filter :form="form.limit" filter-name="limit" @removeFilter="removeFilter" />
+		 <Filter :form="form.limit"
+				 filter-name="limit"
+				 @removeFilter="removeFilter" />
 
-		 <Filter :form="form.status" filter-name="status" @removeFilter="removeFilter" />
+		 <Filter :form="form.status"
+				 filter-name="status"
+				 @removeFilter="removeFilter" />
 
 	  </div>
 	  <!--Table user-->
@@ -74,9 +84,11 @@
 				  </tr>
 				  </thead>
 				  <tbody class="bg-white divide-y divide-gray-200">
-				  <tr v-for="user in users.data" :key="user.email">
+				  <tr v-for="user in users.data"
+					  :key="user.email">
 					 <Td>
-						<DoubleLine :base="user.name" second="onomateponimo" />
+						<DoubleLine :base="user.name"
+									second="onomateponimo" />
 					 </Td>
 					 <Td>
 						{{ user.email }}
@@ -86,19 +98,19 @@
 						   {{ user.status }}
 						</Badge>
 					 </Td>
-					 <Td>
-						rolos
-					 </Td>
+					 <Td>{{ user.role }}</Td>
 					 <Td v-if="user.status === 'trash'">
-						<button @click="selectedUserToAction(user,'restore')">
+						<button @click="selectedModelToAction(user,'restore')">
 						   <ReplyIcon class="w-5" />
 						</button>
 					 </Td>
-					 <Td v-else class="flex space-x-4">
-						<Link :href="user.links.profile" class="">
+					 <Td v-else
+						 class="flex space-x-4">
+						<Link :href="user.links.profile"
+							  class="">
 						   <PencilIcon class="w-5" />
 						</Link>
-						<button @click="selectedUserToAction(user,'delete')">
+						<button @click="selectedModelToAction(user,'delete')">
 						   <XIcon class="w-5" />
 						</button>
 					 </Td>
@@ -114,8 +126,14 @@
 
    </div>
 
-   <DeleteModal @onClose="onClose" :user="selectedUser" :open="confirm.delete" />
-   <RestoreModal @onClose="onClose" :user="selectedUser" :open="confirm.restore" />
+   <DeleteModal @onClose="onClose"
+				:model="selectedModel"
+				modelName="user"
+				:open="confirm.delete" />
+   <RestoreModal @onClose="onClose"
+				 :model="selectedModel"
+				 modelName="user"
+				 :open="confirm.restore" />
 
 </template>
 
@@ -139,12 +157,10 @@ import Badge from "@/Shared/Table/Badge";
 import DoubleLine from "@/Shared/Table/DoubleLine";
 import Pagination from "@/Shared/Table/Pagination";
 import {SearchIcon} from '@heroicons/vue/solid'
-import {PencilIcon} from "@heroicons/vue/outline"
-import {XIcon} from "@heroicons/vue/outline"
 import {watch, reactive, ref} from "vue";
 import {pickBy, throttle} from "lodash";
 import {Inertia} from "@inertiajs/inertia";
-import Input from "@/Shared/Input";
+import Input from "@/Shared/Form/Input";
 import Filter from "@/Shared/Table/Filter";
 import Select from "@/Shared/Form/Select";
 import ResponsiveNavLink from "@/Shared/ResponsiveNavLink";
@@ -153,8 +169,10 @@ import Button from "@/Shared/Button";
 import FlashMessages from "@/Shared/Overlays/FlashMessages";
 import RestoreModal from "@/Shared/Overlays/RestoreModal";
 import {DocumentAddIcon} from "@heroicons/vue/outline"
-import {FilterIcon} from "@heroicons/vue/outline"
-import {ReplyIcon} from "@heroicons/vue/outline"
+import {FilterIcon, ReplyIcon, XIcon, PencilIcon} from "@heroicons/vue/outline"
+import useDelete from "@/Composables/useDelete";
+
+const {onClose, confirm, selectedModel, selectedModelToAction} = useDelete()
 
 
 const props = defineProps({
@@ -166,20 +184,6 @@ const limitFilter = [10, 20, 50, 100];
 
 const limitStatus = ["Active", "Inactive", "Trash"];
 
-//open delete modal and check user  todo make composables
-const confirm = reactive({
-   delete: false,
-   restore: false
-});
-const onClose = (value, action) => {
-   confirm[action] = value
-}
-const action = ref(false);
-const selectedUser = ref(null);
-const selectedUserToAction = (user, action) => {
-   selectedUser.value = user
-   confirm[action] = true;
-}
 
 const form = reactive({
    search: props.filters.search,

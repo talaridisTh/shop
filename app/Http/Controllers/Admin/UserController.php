@@ -6,16 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Inertia\Response;
+use Inertia\ResponseFactory;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller {
 
+    public function __construct()
+    {
+        $this->middleware('permission:read users')->only("index");
+        $this->middleware('permission:create users')->only("create", "store");
+        $this->middleware('permission:update users')->only("update");
+        $this->middleware('permission:delete users')->only("delete", "restore");
+    }
+
     /**
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return Response|ResponseFactory
      */
-    public function index(): \Inertia\Response|\Inertia\ResponseFactory
+    public function index(): Response|ResponseFactory
     {
 
         return inertia("Admin/User/UserIndex", [
@@ -28,18 +40,20 @@ class UserController extends Controller {
     }
 
     /**
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return Response|ResponseFactory
      */
-    public function create(): \Inertia\Response|\Inertia\ResponseFactory
+    public function create(): Response|ResponseFactory
     {
-        return inertia("Admin/User/UserCreate");
+        return inertia("Admin/User/UserCreate", [
+            "roles" => Role::pluck("name"),
+        ]);
     }
 
     /**
      * @param UserRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function store(UserRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(UserRequest $request): RedirectResponse
     {
         $user = $request->store();
 
@@ -48,20 +62,23 @@ class UserController extends Controller {
 
     /**
      * @param User $user
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return Response|ResponseFactory
      */
-    public function edit(User $user): \Inertia\Response|\Inertia\ResponseFactory
+    public function edit(User $user): Response|ResponseFactory
     {
 
-        return inertia("Admin/User/UserEdit", ["user" => UserResource::make($user)]);
+        return inertia("Admin/User/UserEdit", [
+            "user" => UserResource::make($user),
+            "roles" => Role::pluck("name"),
+        ]);
     }
 
     /**
      * @param Request $request
      * @param User $user
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function update(Request $request, User $user): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, User $user): RedirectResponse
     {
 
         $this->validate($request, [
@@ -73,6 +90,7 @@ class UserController extends Controller {
             'email' => $request->email,
             'status' => User::STATUS[$request->status],
         ]);
+        $user->syncRoles($request->role);
         if ($request->password) {
             $user->update(["password" => $request->password]);
         }
@@ -82,9 +100,9 @@ class UserController extends Controller {
 
     /**
      * @param User $user
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function destroy(User $user): \Illuminate\Http\RedirectResponse
+    public function destroy(User $user): RedirectResponse
     {
         $user->delete();
         $user->changeStatus(type: User::STATUS[2]);
@@ -94,9 +112,9 @@ class UserController extends Controller {
 
     /**
      * @param User $user
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function restore(User $user): \Illuminate\Http\RedirectResponse
+    public function restore(User $user): RedirectResponse
     {
         $user->restore();
         $user->changeStatus(type: User::STATUS[0]);

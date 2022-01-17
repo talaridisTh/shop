@@ -30,13 +30,14 @@ class UserRequest extends FormRequest {
     public function store(): mixed
     {
 
-        return User::create([
+        return tap(User::create([
             'name' => Str::lower($this->name),
             'slug' => $this->createSlug($this->name),
             'email' => $this->email,
             'status' => User::STATUS[$this->status],
             'password' => $this->password,
-        ]);
+        ]))->assignRole($this->role);
+
     }
 
     /**
@@ -46,13 +47,13 @@ class UserRequest extends FormRequest {
     public function update($user): mixed
     {
 
-        $user = User::update([
+        tap($user->update([
             'name' => Str::ucfirst($this->name),
             'email' => $this->email,
             'status' => User::STATUS[$this->status],
-        ]);
+        ]))->assignRole($this->role);
         if ($this->password) {
-            User::update(["password" => $this->password]);
+            $user->update(["password" => $this->password]);
         }
 
         return $user;

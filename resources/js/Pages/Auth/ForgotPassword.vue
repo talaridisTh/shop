@@ -28,8 +28,8 @@
 <script>
 import BreezeButton from '@/Shared/Button.vue'
 import BreezeGuestLayout from '@/Layouts/Guest.vue'
-import BreezeInput from '@/Shared/Input.vue'
-import BreezeLabel from '@/Shared/Label.vue'
+import BreezeInput from '@/Shared/Form/Input.vue'
+import BreezeLabel from '@/Shared/Form/Label.vue'
 import BreezeValidationErrors from '@/Shared/ValidationErrors.vue'
 import { Head } from '@inertiajs/inertia-vue3';
 

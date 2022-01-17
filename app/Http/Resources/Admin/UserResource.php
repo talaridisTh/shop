@@ -20,6 +20,8 @@ class UserResource extends JsonResource {
             "created_at" => $this->created_at,
             "deleted_at" => $this->deleted_at,
             "email" => $this->when((auth()->user()->isAdmin() || auth()->user()->is($this)), fn() => $this->email),
+            "role" => $this->when((auth()->user()->isAdmin() || auth()->user()->is($this)), fn() => $this->ownRole()),
+            "can" => $this->when((auth()->user()->isAdmin() || auth()->user()->is($this)), fn() => $this->getPermissionArray()),
             "name" => $this->name,
             "slug" => $this->slug,
             "status" => $this->status,

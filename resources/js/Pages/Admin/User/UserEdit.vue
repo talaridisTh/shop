@@ -48,7 +48,7 @@
 			   <Label required>Role</Label>
 			   <Select @clearError="form.clearErrors('role')"
 					   :hasError="form.errors.role"
-					   v-model="form.role" :options="['Admin','User']" />
+					   v-model="form.role" :options="roles" />
 			   <InputError :message="form.errors.role" />
 			</div>
 
@@ -83,16 +83,17 @@ import ResponsiveNavLink from "@/Shared/ResponsiveNavLink";
 import Title from "@/Shared/Title";
 import AccordionItem from "@/Shared/Elements/AccordionItem";
 import Accordion from "@/Shared/Elements/Accordion";
-import Input from "@/Shared/Input";
-import Label from "@/Shared/Label";
-import InputError from "@/Shared/InputError";
+import Input from "@/Shared/Form/Input";
+import Label from "@/Shared/Form/Label";
+import InputError from "@/Shared/Form/InputError";
 import Select from "@/Shared/Form/Select";
 import {Switch} from '@headlessui/vue'
 import FlashMessages from "@/Shared/Overlays/FlashMessages";
 
 
 const props = defineProps({
-   user: Object
+   user: Object,
+   roles: Object
 })
 
 const form = useForm("EditUser", {
@@ -100,7 +101,7 @@ const form = useForm("EditUser", {
    email: props.user.email,
    password: null,
    password_confirmation: null,
-   role: "User",
+   role: props.user.role,
    status: props.user.status === "active" ? 1 : 0,
 })
 

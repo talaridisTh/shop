@@ -35,7 +35,7 @@
 						</DialogTitle>
 						<div class="mt-2">
 						   <p class="text-sm text-gray-500">
-							  Are you sure you want to delete {{ user.name }}?
+							  Are you sure you want to delete {{ model.name }}?
 						   </p>
 						</div>
 					 </div>
@@ -71,11 +71,12 @@ const props = defineProps({
 	  type: Boolean,
 	  default: false
    },
-   user: Object
+   model: Object,
+   modelName: String
 })
 
 const destroy = () => {
-   Inertia.delete(route('user.destroy', props.user.slug), {
+   Inertia.delete(route(`${props.modelName}.destroy`, props.model.slug), {
 	  preserveScroll: true,
 	  onSuccess: () => emit("onClose", open = false, "delete")
    })

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder {
             'email_verified_at' => now(),
             'password' => 'password', // password
             'remember_token' => Str::random(10),
-        ]);
+        ])->assignRole("admin");
         User::factory()->count(10)->create();
     }
 

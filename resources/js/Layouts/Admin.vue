@@ -204,6 +204,12 @@ const setting = [
 	  icon: UserIcon,
 	  current: true,
    },
+   {
+	  name: 'Role',
+	  href: route('role.index'),
+	  icon: UserIcon,
+	  current: true,
+   },
 ]
 
 

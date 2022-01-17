@@ -29,6 +29,7 @@ class UserTest extends TestCase {
     public function it_can_see_user_in_page()
     {
 
+
         $this->actingAs($this->user)
             ->get(route("user.index"))
             ->assertInertia(fn(Assert $assert) => $assert
@@ -119,7 +120,7 @@ class UserTest extends TestCase {
         $data = [
             'name' => "user_2",
             "status" => 0,
-            "role" => 'user',
+            "role" => 'admin',
             'email' => "user_2@gmail.com",
             'password' => "password",
             'password_confirmation' => "password",
@@ -154,7 +155,7 @@ class UserTest extends TestCase {
         $data = [
             'name' => "rename_user",
             "status" => 0,
-            "role" => "User",
+            "role" => "admin",
             'email' => "user@gmail.com",
         ];
         $this->actingAs($this->user)

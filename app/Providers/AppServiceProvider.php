@@ -4,10 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 use Laravel\Scout\Builder;
 
-class AppServiceProvider extends ServiceProvider
-{
+class AppServiceProvider extends ServiceProvider {
+
     /**
      * Register any application services.
      *
@@ -16,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        Sanctum::ignoreMigrations();
     }
 
     /**
@@ -28,6 +30,6 @@ class AppServiceProvider extends ServiceProvider
         //
         JsonResource::withoutWrapping();
 
-
     }
+
 }

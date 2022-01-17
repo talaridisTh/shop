@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
-use Laravel\Scout\Searchable;
-use phpDocumentor\Reflection\Type;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable {
 
-    use  HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -48,9 +49,20 @@ class User extends Authenticatable {
         'email_verified_at' => 'datetime',
     ];
 
+    public function ownRole()
+    {
+        return $this->getRoleNames()[0] ?? null;
+    }
+
     /**
-     * @return Attribute
+     * @return Collection
      */
+    public function getPermissionArray(): Collection
+    {
+        return $this->getPermissionsViaRoles()->map(fn($pr) => $pr['name']);
+
+    }
+
     public function password(): Attribute
     {
         return Attribute::set(fn($value) => bcrypt($value));
@@ -61,10 +73,6 @@ class User extends Authenticatable {
         return $this->where($field ?? 'slug', $value)->withTrashed()->firstOrFail();
     }
 
-//    public function getRouteKeyName()
-//    {
-//        return 'slug';
-//    }
     /**
      * @param $query
      * @param $type
@@ -79,7 +87,7 @@ class User extends Authenticatable {
 
     public function isAdmin()
     {
-        return true;
+        return $this->ownRole() === "admin";
     }
 
     /**

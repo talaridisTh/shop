@@ -1,10 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +17,8 @@ use Inertia\Inertia;
 */
 Route::group(["prefix" => "admin", "middleware" => ["auth", "verified"]], function () {
     Route::get("", [DashboardController::class, "index"])->name("dashboard");
+    Route::put("/role/{role}/perm", [RoleController::class, "perm"])->name("role.perm");
+    Route::resource("/role", RoleController::class)->only("index", "edit");
     Route::put('/user/{user}/restore', [UserController::class, 'restore'])->name("user.restore");
     Route::resource("/user", UserController::class);
 });
